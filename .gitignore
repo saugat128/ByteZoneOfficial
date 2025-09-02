@@ -29,3 +29,89 @@ app.listen(PORT, () => console.log(`Server running on port ${PORT}`));
 cd backend
 npm init -y
 npm install express dotenv cors
+
+npx create-react-app frontend
+cd frontend
+npm install axios react-router-dom
+
+import React from "react";
+import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
+import Home from "./pages/Home";
+import Checkout from "./pages/Checkout";
+
+function App() {
+  return (
+    <Router>
+      <Routes>
+        <Route path="/" element={<Home />} />
+        <Route path="/checkout" element={<Checkout />} />
+      </Routes>
+    </Router>
+  );
+}
+
+export default App;
+
+import React, { useEffect, useState } from "react";
+import axios from "axios";
+import { Link } from "react-router-dom";
+
+function Home() {
+  const [products, setProducts] = useState([]);
+
+  useEffect(() => {
+    axios.get("http://localhost:5000/api/products")
+      .then(res => setProducts(res.data))
+      .catch(err => console.log(err));
+  }, []);
+
+  return (
+    <div className="p-4">
+      <h1 className="text-3xl font-bold mb-4">ByteZone – Nepal's Electronics Hub</h1>
+      <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+        {products.map(product => (
+          <div key={product.id} className="border p-4 rounded shadow">
+            <img src={product.image} alt={product.name} className="w-full h-40 object-cover mb-2"/>
+            <h2 className="text-xl font-semibold">{product.name}</h2>
+            <p>{product.description}</p>
+            <p className="font-bold mt-2">Rs {product.price}</p>
+            <Link to="/checkout" className="bg-blue-500 text-white px-4 py-2 mt-2 inline-block rounded">
+              Buy Now
+            </Link>
+          </div>
+        ))}
+      </div>
+    </div>
+  );
+}
+
+export default Home;
+
+import React from "react";
+
+function Checkout() {
+  return (
+    <div className="p-4">
+      <h1 className="text-2xl font-bold mb-4">Checkout</h1>
+      <p>Payment options: Esewa, Khalti, Bank Transfer, COD</p>
+      <button className="bg-green-500 text-white px-4 py-2 mt-4 rounded">Pay Now</button>
+    </div>
+  );
+}
+
+export default Checkout;
+
+npm install -D tailwindcss postcss autoprefixer
+npx tailwindcss init -p
+module.exports = {
+  content: ["./src/**/*.{js,jsx,ts,tsx}"],
+  theme: { extend: {} },
+  plugins: [],
+};
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+cd backend
+node server.js
+cd frontend
+npm start
